@@ -1,0 +1,49 @@
+package client;
+
+import dto.EndpointHitDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+@Service
+@Slf4j
+public class ClientService extends BaseClient {
+
+    @Autowired
+    public ClientService(@Value("${shareit_server_url}") String serverUrl, RestTemplateBuilder builder) {
+        super(
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
+                        .build()
+        );
+    }
+
+    public void hit(EndpointHitDto endpointHitDto) {
+        log.info("Создать запись статистики uri = " + endpointHitDto.getUri());
+        post("/hit", endpointHitDto);
+    }
+
+    public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, String uris, boolean unique) {
+        log.info("HttpClient GetStats" + "start = " + start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
+                " end = " + end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " uris = " + uris +
+                " unique = " + unique);
+
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", -1L,
+                Map.of(
+                        "start", start,
+                        "end", end,
+                        "uris", uris,
+                        "unique", String.valueOf(unique)));
+
+    }
+}

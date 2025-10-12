@@ -1,14 +1,48 @@
 services:
   stats-server:
+    build:
+      context: ewm-stats-service/httpService
+      dockerfile: Docker.yml
+    image: ewm-stats-service:latest
+    container_name: stats-service
     ports:
       - "9090:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - ewm-network
+    depends_on:
+      - stats-db
+
+  stats-client:
+    build:
+      context: ewm-stats-service/httpClient
+      dockerfile: Docker.yml
+    image: ewm-stats-client:latest
+    container_name: stats-client
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - shareit_server_url=http://stats-server:9090
+    networks:
+      - ewm-network
+    depends_on:
+      - stats-server
 
   stats-db:
     image: postgres:16.1
-
-  ewm-service:
+    environment:
+      - POSTGRES_DB=statsdb
+      - POSTGRES_USER=statsuser
+      - POSTGRES_PASSWORD=statspass
     ports:
-      - "8080:8080"
+      - "5433:5432"
+    networks:
+      - ewm-network
 
-  ewm-db:
-    image: postgres:16.1
+networks:
+  ewm-network:
+    driver: bridge
+
+
