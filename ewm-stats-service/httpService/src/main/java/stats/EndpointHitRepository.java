@@ -13,13 +13,15 @@ public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long>,
 
     @Query("select new dto.StatsDto(u.app, u.uri, count(*)) from EndpointHit u " +
             "where u.timestamp BETWEEN :start AND :end " +
-            "GROUP BY u.app, u.uri")
+            "GROUP BY u.app, u.uri " +
+            "ORDER BY count(*)  DESC")
     List<StatsDto> notUniqueGetStatsDto(@Param("start") LocalDateTime start,
                                         @Param("end") LocalDateTime end);
 
     @Query("select new dto.StatsDto(u.app, u.uri, count(distinct ip)) from EndpointHit u " +
             "where u.timestamp BETWEEN :start AND :end " +
-            "GROUP BY u.app, u.uri")
+            "GROUP BY u.app, u.uri " +
+            "ORDER BY count(*) DESC")
     List<StatsDto> uniqueGetStatsDto(@Param("start") LocalDateTime start,
                                      @Param("end") LocalDateTime end);
 
