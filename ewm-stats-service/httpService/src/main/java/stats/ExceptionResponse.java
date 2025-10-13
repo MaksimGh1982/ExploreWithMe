@@ -1,4 +1,4 @@
-package client;
+package stats;
 
 public class ExceptionResponse {
     private final String error;

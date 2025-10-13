@@ -2,14 +2,17 @@ package stats;
 
 import dto.EndpointHitDto;
 import dto.StatsDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
+@Validated
 public class StatsController {
 
     private final StatsService statsService;
@@ -20,7 +23,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public void save(@RequestBody EndpointHitDto endpointHitDto) {
+    public void save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         statsService.hit(endpointHitDto);
     }
 

@@ -19,7 +19,7 @@ import java.util.Map;
 public class ClientService extends BaseClient {
 
     @Autowired
-    public ClientService(@Value("${shareit_server_url}") String serverUrl, RestTemplateBuilder builder) {
+    public ClientService(@Value("${stats_server_url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
@@ -28,8 +28,12 @@ public class ClientService extends BaseClient {
         );
     }
 
-    public void hit(EndpointHitDto endpointHitDto) {
-        log.info("Создать запись статистики uri = " + endpointHitDto.getUri());
+    public void hit(String app, String uri, String ip, LocalDateTime timestamp) {
+        EndpointHitDto endpointHitDto = new EndpointHitDto();
+        endpointHitDto.setIp(ip);
+        endpointHitDto.setUri(uri);
+        endpointHitDto.setApp(app);
+        endpointHitDto.setTimestamp(timestamp);
         post("/hit", endpointHitDto);
     }
 

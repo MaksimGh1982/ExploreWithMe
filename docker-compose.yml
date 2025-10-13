@@ -14,21 +14,21 @@ services:
     depends_on:
       - stats-db
 
-  stats-client:
+  ewm-service:
     build:
-      context: ewm-stats-service/httpClient
+      context: ewm-main-service
       dockerfile: Docker.yml
-    image: ewm-stats-client:latest
-    container_name: stats-client
+    image: ewm-main-service:latest
+    container_name: main-service
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - shareit_server_url=http://stats-server:9090
     networks:
       - ewm-network
     depends_on:
-      - stats-server
+      - ewm-db
+
 
   stats-db:
     image: postgres:16.1
@@ -38,6 +38,17 @@ services:
       - POSTGRES_PASSWORD=statspass
     ports:
       - "5433:5432"
+    networks:
+      - ewm-network
+
+  ewm-db:
+    image: postgres:16.1
+    environment:
+      - POSTGRES_DB=maindb
+      - POSTGRES_USER=mainsuser
+      - POSTGRES_PASSWORD=mainpass
+    ports:
+      - "5432:5432"
     networks:
       - ewm-network
 
