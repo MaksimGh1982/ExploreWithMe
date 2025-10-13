@@ -1,8 +1,8 @@
 services:
   stats-server:
     build:
-      context: ewm-stats-service/httpService
-      dockerfile: Docker.yml
+      context: ./ewm-stats-service/httpService
+      dockerfile: docker.yml
     image: ewm-stats-service:latest
     container_name: stats-service
     ports:
@@ -16,8 +16,8 @@ services:
 
   ewm-service:
     build:
-      context: ewm-main-service
-      dockerfile: Docker.yml
+      context: ./ewm-main-service
+      dockerfile: docker.yml
     image: ewm-main-service:latest
     container_name: main-service
     ports:
