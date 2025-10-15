@@ -1,14 +1,59 @@
 services:
   stats-server:
+    build:
+      context: ./ewm-stats-service/httpService
+      dockerfile: docker.yml
+    image: ewm-stats-service:latest
+    container_name: stats-service
     ports:
       - "9090:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - ewm-network
+    depends_on:
+      - stats-db
+
+  ewm-service:
+    build:
+      context: ./ewm-main-service
+      dockerfile: docker.yml
+    image: ewm-main-service:latest
+    container_name: main-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - ewm-network
+    depends_on:
+      - ewm-db
+
 
   stats-db:
     image: postgres:16.1
-
-  ewm-service:
+    environment:
+      - POSTGRES_DB=statsdb
+      - POSTGRES_USER=statsuser
+      - POSTGRES_PASSWORD=statspass
     ports:
-      - "8080:8080"
+      - "5433:5432"
+    networks:
+      - ewm-network
 
   ewm-db:
     image: postgres:16.1
+    environment:
+      - POSTGRES_DB=maindb
+      - POSTGRES_USER=mainsuser
+      - POSTGRES_PASSWORD=mainpass
+    ports:
+      - "5432:5432"
+    networks:
+      - ewm-network
+
+networks:
+  ewm-network:
+    driver: bridge
+
+
