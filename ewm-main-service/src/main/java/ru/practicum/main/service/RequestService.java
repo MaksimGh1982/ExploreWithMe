@@ -1,14 +1,24 @@
 package ru.practicum.main.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.common.EventState;
+import ru.practicum.main.common.RequestStatus;
 import ru.practicum.main.dto.ParticipationRequestDto;
+import ru.practicum.main.mapper.ParticipationRequestDtoMapper;
+import ru.practicum.main.model.Event;
+import ru.practicum.main.model.ParticipationRequest;
+import ru.practicum.main.model.User;
 import ru.practicum.main.storage.EventRepository;
 import ru.practicum.main.storage.ParticipationRequestRepository;
 import ru.practicum.main.storage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,19 +38,75 @@ public class RequestService {
 
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.info("Getting requests for user: {}", userId);
-        // TODO: найти все заявки пользователя
-        return List.of();
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь id = " + userId + "  не найден"));
+
+        return requestRepository.findByRequesterId(userId)
+                .stream()
+                .map(item -> ParticipationRequestDtoMapper.toParticipationRequestDto(item))
+                .collect(Collectors.toList());
     }
 
     public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
         log.info("Adding participation request for user: {} to event: {}", userId, eventId);
-        // TODO: проверить возможность подачи заявки, создать запрос
-        return null;
+        if (requestRepository.findByRequesterIdAndEventId(userId, eventId) != null) {
+            throw new ConstraintViolationException("Повторный запрос на учатсие в событии id = " + eventId + " от пользователя id = " + userId, null, null);
+        }
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("событие id = " + eventId + "  не найдено"));
+
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConstraintViolationException("Нельзя подать заявку на участие в собственном событии", null, null);
+        }
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConstraintViolationException("Событие id = " + eventId + " не опубликовано", null, null);
+        }
+
+        if (event.getConfirmedRequests() >= event.getParticipantLimit() && event.getParticipantLimit() > 0) {
+            throw new ConstraintViolationException("У события = " + eventId + " достигнут лимит участников", null, null);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь id = " + userId + "  не найден"));
+
+        ParticipationRequest participationRequest = new ParticipationRequest();
+        participationRequest.setEvent(event);
+        participationRequest.setRequester(user);
+        participationRequest.setCreated(LocalDateTime.now());
+        participationRequest.setStatus(event.getRequestModeration() && event.getParticipantLimit() > 0 ? RequestStatus.PENDING : RequestStatus.CONFIRMED);
+
+        ParticipationRequestDto participationRequestDto =
+                ParticipationRequestDtoMapper.toParticipationRequestDto(requestRepository.save(participationRequest));
+
+        if (participationRequest.getStatus() == RequestStatus.CONFIRMED) {
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
+        }
+
+        return participationRequestDto;
     }
 
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         log.info("Canceling request: {} by user: {}", requestId, userId);
-        // TODO: найти заявку, проверить права, отменить
-        return null;
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь id = " + userId + "  не найден"));
+
+        ParticipationRequest participationRequest = requestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Заявка id = " + requestId + "  не найдена"));
+
+        RequestStatus oldStatus = participationRequest.getStatus();
+
+        participationRequest.setStatus(RequestStatus.CANCELED);
+
+        ParticipationRequestDto participationRequestDto =
+                ParticipationRequestDtoMapper.toParticipationRequestDto(requestRepository.save(participationRequest));
+
+        if (oldStatus == RequestStatus.CONFIRMED) {
+            participationRequest.getEvent().setConfirmedRequests(participationRequest.getEvent().getConfirmedRequests() - 1);
+            eventRepository.save(participationRequest.getEvent());
+        }
+
+        return participationRequestDto;
     }
 }

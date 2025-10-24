@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "participation_requests",
+        name = "Requests",
         uniqueConstraints = @UniqueConstraint(columnNames = {"event_id", "requester_id"})
 )
 @EqualsAndHashCode(of = { "id" })

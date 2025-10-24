@@ -1,11 +1,11 @@
 package ru.practicum.main.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.main.common.RequestStatus;
 
 import java.util.List;
 
@@ -17,6 +17,6 @@ public class EventRequestStatusUpdateRequest {
     @NotNull
     private List<Long> requestIds;
 
-    @NotBlank
-    private String status; // CONFIRMED, REJECTED
+    @NotNull
+    private RequestStatus status; // CONFIRMED, REJECTED
 }

@@ -16,6 +16,22 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<ApiError> handleValidationExceptions(NumberFormatException ex) {
+
+        ApiError apiError = new ApiError(
+                List.of(ex.getMessage()),
+                "Validation failed",
+                "Incorrectly made request.",
+                "BAD_REQUEST",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
@@ -60,5 +76,29 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
+    @ExceptionHandler(ValidException.class)
+    public ResponseEntity<ApiError> handleIncorrectParameter(final ValidException ex) {
+        ApiError apiError = new ApiError(
+                List.of(ex.getMessage()),
+                ex.getMessage(),
+                "The required object was not found.",
+                "FORBIDDEN",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiError> handleIncorrectParameter(final BadRequestException ex) {
+        ApiError apiError = new ApiError(
+                List.of(ex.getMessage()),
+                ex.getMessage(),
+                "bad request.",
+                "BAD_REQUEST",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 }

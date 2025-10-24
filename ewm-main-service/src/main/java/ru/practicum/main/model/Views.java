@@ -1,26 +1,29 @@
 package ru.practicum.main.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Views")
 @EqualsAndHashCode(of = { "id" })
 @Getter
 @Setter
-public class User {
-
+@NoArgsConstructor
+public class Views {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 250, nullable = false)
-    private String name;
+    @Column(name = "ip", nullable = false)
+    private String ip;
 
-    @Column(name = "email", length = 254, nullable = false, unique = true)
-    private String email;
+    @Column(name = "Event_Id", nullable = false)
+    private Long event;
 
     @Column(name = "created")
     private LocalDateTime created;

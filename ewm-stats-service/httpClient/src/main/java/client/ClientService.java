@@ -28,13 +28,13 @@ public class ClientService extends BaseClient {
         );
     }
 
-    public void hit(String app, String uri, String ip, LocalDateTime timestamp) {
+    public ResponseEntity<Object> hit(String app, String uri, String ip, LocalDateTime timestamp) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setIp(ip);
         endpointHitDto.setUri(uri);
         endpointHitDto.setApp(app);
         endpointHitDto.setTimestamp(timestamp);
-        post("/hit", endpointHitDto);
+        return post("/hit", endpointHitDto);
     }
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, String uris, boolean unique) {

@@ -5,7 +5,6 @@ import lombok.*;
 import ru.practicum.main.common.EventState;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -27,22 +26,12 @@ public class Event {
     @Column(name = "description", length = 7000)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "category_Id")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "initiator_id", nullable = false)
-    private User initiator;
-
-    @Column(name = "event_date", nullable = false)
+    @Column(name = "eventDate", nullable = false)
     private LocalDateTime eventDate;
-
-    @Column(name = "created_on")
-    private LocalDateTime createdOn;
-
-    @Column(name = "published_on")
-    private LocalDateTime publishedOn;
 
     @Embedded
     private Location location;
@@ -57,7 +46,7 @@ public class Event {
     private Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", length = 20)
+    @Column(name = "state")
     private EventState state;
 
     @Column(name = "views")
@@ -66,11 +55,15 @@ public class Event {
     @Column(name = "confirmed_requests")
     private Long confirmedRequests;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<ParticipationRequest> participationRequests;
+    @Column(name = "created_on")
+    private LocalDateTime createdOn;
 
-    @ManyToMany(mappedBy = "events")
-    private List<Compilation> compilations;
+    @Column(name = "published_on")
+    private LocalDateTime publishedOn;
+
+    @ManyToOne
+    @JoinColumn(name = "initiator_Id")
+    private User initiator;
 
     @PrePersist
     protected void onCreate() {
@@ -84,10 +77,11 @@ public class Event {
     }
 
     @Embeddable
-    @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Location {
+    @Getter
+    @Setter
+    public static class Location {
 
         @Column(name = "location_lat", nullable = false)
         private Float lat;

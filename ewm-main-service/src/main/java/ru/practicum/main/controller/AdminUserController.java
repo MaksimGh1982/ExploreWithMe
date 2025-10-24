@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.dto.NewUserRequest;
 import ru.practicum.main.dto.UserDto;
@@ -14,13 +15,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
+@Validated
 public class AdminUserController {
 
     private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers(
-            @RequestParam(required = false) List<Long> ids,
+            @RequestParam(defaultValue = "") List<Long> ids,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
 

@@ -27,4 +27,13 @@ public class ErrorHandler {
                 "Возникло исключение.",
                 errors.toString());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleIncorrectParameter(final ValidException e) {
+        return new ExceptionResponse(
+                "Ошибка валидации.",
+                e.getMessage()
+        );
+    }
 }

@@ -66,6 +66,13 @@
 
 
 
+        <dependency>
+            <groupId>ru.practicum</groupId>
+            <artifactId>ewmHttpClient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
 
 
 

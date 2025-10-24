@@ -39,8 +39,8 @@ public class CategoryService {
 
     public CategoryDto getCategory(Long catId) {
         log.info("Getting category by id: {}", catId);
-        return CategoryDtoMapper.toCategoryDto(categoryRepository.findById(catId).
-                orElseThrow(() -> new EntityNotFoundException("Category with id=" + catId + " was not found")));
+        return CategoryDtoMapper.toCategoryDto(categoryRepository.findById(catId)
+                .orElseThrow(() -> new EntityNotFoundException("Category with id=" + catId + " was not found")));
     }
 
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
@@ -52,8 +52,8 @@ public class CategoryService {
         log.info("Updating category with id: {}", catId);
         CategoryDto oldCategoryDto = getCategory(catId);
         oldCategoryDto.setName(categoryDto.getName());
-        CategoryDtoMapper.toCategoryDto(categoryRepository.save(CategoryDtoMapper.toCategory(oldCategoryDto)));
-        return null;
+        return CategoryDtoMapper.toCategoryDto(categoryRepository.save(CategoryDtoMapper.toCategory(oldCategoryDto)));
+
     }
 
     public void deleteCategory(Long catId) {
@@ -64,8 +64,8 @@ public class CategoryService {
 
     public CategoryDto findCategoryById(Long categoryId) {
         log.info("Finding category by id: {}", categoryId);
-        return CategoryDtoMapper.toCategoryDto(categoryRepository.findById(categoryId).
-                orElseThrow(() -> new EntityNotFoundException("Category with id=" + categoryId + " was not found")));
+        return CategoryDtoMapper.toCategoryDto(categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category with id=" + categoryId + " was not found")));
 
     }
 }

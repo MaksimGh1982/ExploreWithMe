@@ -1,7 +1,6 @@
 package ru.practicum.main.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "categories")
-@EqualsAndHashCode(of = { "id" })
+@EqualsAndHashCode(of = {"id"})
 @Getter
 @Setter
 public class Category {
