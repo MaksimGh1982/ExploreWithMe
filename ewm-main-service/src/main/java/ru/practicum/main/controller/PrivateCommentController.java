@@ -1,0 +1,49 @@
+package ru.practicum.main.controller;
+
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.dto.CommentDto;
+import ru.practicum.main.service.CommentService;
+
+@RestController
+@RequestMapping("/user/{userId}/events/{eventId}/comments")
+@Validated
+public class PrivateCommentController {
+
+    private final CommentService commentService;
+
+    @Autowired
+    public PrivateCommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
+    @PostMapping
+    public ResponseEntity<CommentDto> addComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @Valid @RequestBody CommentDto request) {
+
+        CommentDto savedCommentDto = commentService.addCommentToEvent(userId, eventId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
+    }
+
+    @PatchMapping
+    public ResponseEntity<CommentDto> updateComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @Valid @RequestBody CommentDto request) {
+
+        CommentDto savedCommentDto = commentService.updateCommentToEvent(userId,eventId, request);
+        return ResponseEntity.ok(savedCommentDto);
+
+    }
+
+    @DeleteMapping("/{commentId}")
+    public void deleteComment(@PathVariable Long commentId) {
+        commentService.deleteCommentToEvent(commentId);
+    }
+}
