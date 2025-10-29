@@ -266,7 +266,13 @@ public class EventService {
         }
 
         if (updateRequest.getStateAction() != null) {
-            event.setState(updateRequest.getStateAction() == EventStateActionAdmin.PUBLISH_EVENT ? EventState.PUBLISHED : EventState.CANCELED);
+            if (updateRequest.getStateAction() == EventStateActionAdmin.PUBLISH_EVENT) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else {
+                event.setState(EventState.CANCELED);
+                event.setPublishedOn(null);
+            }
         }
 
         return eventFullDtoMapper.eventToEventFullDto(eventRepository.save(event));

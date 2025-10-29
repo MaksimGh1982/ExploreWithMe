@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.main.common.EventState;
+import ru.practicum.main.common.GlobalConstant;
 
 import java.time.LocalDateTime;
 
@@ -26,13 +27,14 @@ public class EventFullDto {
 
     private Long confirmedRequests;
 
+    @JsonFormat(pattern = GlobalConstant.DATA_PATTERN)
     private LocalDateTime createdOn;
 
     @Size(min = 20, max = 7000)
     private String description;
 
     @NotBlank
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = GlobalConstant.DATA_PATTERN)
     private LocalDateTime eventDate;
 
     @NotNull
@@ -46,6 +48,7 @@ public class EventFullDto {
 
     private Integer participantLimit = 0;
 
+    @JsonFormat(pattern = GlobalConstant.DATA_PATTERN)
     private LocalDateTime publishedOn;
 
     private Boolean requestModeration = true;

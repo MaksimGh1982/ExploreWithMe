@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.main.common.GlobalConstant;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +27,7 @@ public class EventShortDto {
     private Long confirmedRequests;
 
     @NotBlank
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = GlobalConstant.DATA_PATTERN)
     private LocalDateTime eventDate;
 
     @NotNull
