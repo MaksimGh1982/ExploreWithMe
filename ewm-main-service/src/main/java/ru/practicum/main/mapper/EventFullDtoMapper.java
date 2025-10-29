@@ -1,11 +1,20 @@
 package ru.practicum.main.mapper;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.practicum.main.common.EventViews;
 import ru.practicum.main.dto.EventFullDto;
 import ru.practicum.main.model.Event;
 
-@UtilityClass
+@Component
 public class EventFullDtoMapper {
+    private final EventViews eventViews;
+
+    @Autowired
+    EventFullDtoMapper(EventViews eventViews) {
+        this.eventViews = eventViews;
+    }
+
     public EventFullDto eventToEventFullDto(Event event) {
         return new EventFullDto(event.getId(),
                 event.getAnnotation(),
@@ -22,6 +31,6 @@ public class EventFullDtoMapper {
                 event.getRequestModeration(),
                 event.getState(),
                 event.getTitle(),
-                event.getViews());
+                eventViews.getViews(event.getId()));
     }
 }

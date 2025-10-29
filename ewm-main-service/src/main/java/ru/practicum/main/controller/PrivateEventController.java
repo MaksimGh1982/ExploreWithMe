@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.common.GlobalConstant;
 import ru.practicum.main.dto.*;
 import ru.practicum.main.service.EventService;
 
@@ -22,8 +23,8 @@ public class PrivateEventController {
     @GetMapping
     public ResponseEntity<List<EventShortDto>> getEvents(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_FROM) Integer from,
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_SIZE) Integer size) {
 
         List<EventShortDto> events = eventService.getUserEvents(userId, from, size);
         return ResponseEntity.ok(events);

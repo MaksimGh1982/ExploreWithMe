@@ -3,6 +3,7 @@ package ru.practicum.main.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.common.GlobalConstant;
 import ru.practicum.main.dto.CategoryDto;
 import ru.practicum.main.service.CategoryService;
 
@@ -17,8 +18,8 @@ public class PublicCategoryController {
 
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getCategories(
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_FROM) Integer from,
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_SIZE) Integer size) {
 
         List<CategoryDto> categories = categoryService.getCategories(from, size);
         return ResponseEntity.ok(categories);

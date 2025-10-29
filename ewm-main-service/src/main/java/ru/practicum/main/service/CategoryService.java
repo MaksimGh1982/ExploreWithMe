@@ -32,7 +32,7 @@ public class CategoryService {
         return categoryRepository.findAll().stream()
                 .skip(from)
                 .limit(size)
-                .map((item) -> CategoryDtoMapper.toCategoryDto(item))
+                .map(CategoryDtoMapper::toCategoryDto)
                 .collect(Collectors.toList());
 
     }
@@ -53,19 +53,11 @@ public class CategoryService {
         CategoryDto oldCategoryDto = getCategory(catId);
         oldCategoryDto.setName(categoryDto.getName());
         return CategoryDtoMapper.toCategoryDto(categoryRepository.save(CategoryDtoMapper.toCategory(oldCategoryDto)));
-
     }
 
     public void deleteCategory(Long catId) {
         log.info("Deleting category with id: {}", catId);
-        CategoryDto categoryDto = getCategory(catId);
+        getCategory(catId);
         categoryRepository.deleteById(catId);
-    }
-
-    public CategoryDto findCategoryById(Long categoryId) {
-        log.info("Finding category by id: {}", categoryId);
-        return CategoryDtoMapper.toCategoryDto(categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category with id=" + categoryId + " was not found")));
-
     }
 }

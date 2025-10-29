@@ -2,9 +2,9 @@ package ru.practicum.main.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.common.DataConflictException;
 import ru.practicum.main.common.EventState;
 import ru.practicum.main.common.RequestStatus;
 import ru.practicum.main.dto.ParticipationRequestDto;
@@ -43,28 +43,28 @@ public class RequestService {
 
         return requestRepository.findByRequesterId(userId)
                 .stream()
-                .map(item -> ParticipationRequestDtoMapper.toParticipationRequestDto(item))
+                .map(ParticipationRequestDtoMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 
     public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
         log.info("Adding participation request for user: {} to event: {}", userId, eventId);
         if (requestRepository.findByRequesterIdAndEventId(userId, eventId) != null) {
-            throw new ConstraintViolationException("Повторный запрос на учатсие в событии id = " + eventId + " от пользователя id = " + userId, null, null);
+            throw new DataConflictException("Повторный запрос на учатсие в событии id = " + eventId + " от пользователя id = " + userId);
         }
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("событие id = " + eventId + "  не найдено"));
 
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ConstraintViolationException("Нельзя подать заявку на участие в собственном событии", null, null);
+            throw new DataConflictException("Нельзя подать заявку на участие в собственном событии");
         }
 
         if (event.getState() != EventState.PUBLISHED) {
-            throw new ConstraintViolationException("Событие id = " + eventId + " не опубликовано", null, null);
+            throw new DataConflictException("Событие id = " + eventId + " не опубликовано");
         }
 
         if (event.getConfirmedRequests() >= event.getParticipantLimit() && event.getParticipantLimit() > 0) {
-            throw new ConstraintViolationException("У события = " + eventId + " достигнут лимит участников", null, null);
+            throw new DataConflictException("У события = " + eventId + " достигнут лимит участников");
         }
 
         User user = userRepository.findById(userId)

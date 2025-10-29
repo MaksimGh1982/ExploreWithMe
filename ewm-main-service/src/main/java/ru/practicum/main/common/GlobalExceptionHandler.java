@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage()),
                 "Validation failed",
                 "Incorrectly made request.",
-                "BAD_REQUEST",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
@@ -45,8 +45,8 @@ public class GlobalExceptionHandler {
                 errors,
                 "Validation failed",
                 "Incorrectly made request.",
-                "BAD_REQUEST",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
@@ -58,8 +58,21 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage()),
                 ex.getMessage(),
                 "Integrity constraint has been violated.",
-                "CONFLICT",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.CONFLICT,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
+
+    @ExceptionHandler(DataConflictException.class)
+    public ResponseEntity<ApiError> handleConstraintViolation(DataConflictException ex) {
+        ApiError apiError = new ApiError(
+                List.of(ex.getMessage()),
+                ex.getMessage(),
+                "Integrity constraint has been violated.",
+                HttpStatus.CONFLICT,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
@@ -71,8 +84,8 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage()),
                 ex.getMessage(),
                 "The required object was not found.",
-                "NOT_FOUND",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
@@ -84,8 +97,8 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage()),
                 ex.getMessage(),
                 "The required object was not found.",
-                "FORBIDDEN",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.FORBIDDEN,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
@@ -96,8 +109,8 @@ public class GlobalExceptionHandler {
                 List.of(ex.getMessage()),
                 ex.getMessage(),
                 "bad request.",
-                "BAD_REQUEST",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(GlobalConstant.DATA_PATTERN))
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }

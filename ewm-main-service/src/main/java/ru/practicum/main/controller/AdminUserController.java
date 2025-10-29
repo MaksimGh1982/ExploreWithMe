@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.main.common.GlobalConstant;
 import ru.practicum.main.dto.NewUserRequest;
 import ru.practicum.main.dto.UserDto;
 import ru.practicum.main.service.UserService;
@@ -23,8 +24,8 @@ public class AdminUserController {
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers(
             @RequestParam(defaultValue = "") List<Long> ids,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_FROM) Integer from,
+            @RequestParam(defaultValue = GlobalConstant.DEFAULT_SIZE) Integer size) {
 
         List<UserDto> users = userService.getUsers(ids, from, size);
         return ResponseEntity.ok(users);

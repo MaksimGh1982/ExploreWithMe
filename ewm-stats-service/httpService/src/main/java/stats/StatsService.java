@@ -27,6 +27,11 @@ public class StatsService {
         return EndpointHitMapper.endpointHitDto(endpointHitRepository.save(EndpointHitMapper.toEndpointHit(endpointHitDto)));
     }
 
+    public Integer getViews(Long eventId) {
+        log.info("Количество уникальных просмотров события id = " + eventId);
+        return endpointHitRepository.countUniqueViewsByEventId(eventId);
+    }
+
     public Collection<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         log.info("GetStats" + "start = " + start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
                 " end = " + end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " uris = " + uris.toString() +

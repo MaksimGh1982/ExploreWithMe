@@ -1,13 +1,23 @@
 package ru.practicum.main.mapper;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.practicum.main.common.EventViews;
 import ru.practicum.main.dto.EventShortDto;
 import ru.practicum.main.model.Event;
 
-@UtilityClass
+@Component
 public class EventShortDtoMapper {
+
+    private final EventViews eventViews;
+
+    @Autowired
+    EventShortDtoMapper(EventViews eventViews) {
+        this.eventViews = eventViews;
+    }
+
     public EventShortDto eventShortDto(Event event) {
-        EventShortDto eventShortDto = new EventShortDto(
+        return new EventShortDto(
                 event.getId(),
                 event.getAnnotation(),
                 CategoryDtoMapper.toCategoryDto(event.getCategory()),
@@ -16,8 +26,6 @@ public class EventShortDtoMapper {
                 UserShortDtoMapper.toUserShortDto(event.getInitiator()),
                 event.getPaid(),
                 event.getTitle(),
-                event.getViews());
-
-        return eventShortDto;
+                eventViews.getViews(event.getId()));
     }
 }

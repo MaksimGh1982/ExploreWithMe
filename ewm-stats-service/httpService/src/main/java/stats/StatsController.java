@@ -37,4 +37,10 @@ public class StatsController {
 
         return statsService.getStats(start, end, uris, unique);
     }
+
+    @GetMapping("/stats/{eventId}")
+    public Integer getViews(@PathVariable Long eventId) {
+        return statsService.getViews(eventId);
+
+    }
 }

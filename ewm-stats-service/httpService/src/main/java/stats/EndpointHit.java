@@ -27,6 +27,8 @@ public class EndpointHit {
     private String ip;
     @Column(name = "timestm", nullable = false)
     private LocalDateTime timestamp;
+    @Column(name = "event_id")
+    private Long event;
 
 
     public boolean equals(Object o) {

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.main.common.BadRequestException;
 import ru.practicum.main.dto.CompilationDto;
 import ru.practicum.main.dto.NewCompilationDto;
 import ru.practicum.main.dto.UpdateCompilationRequest;
@@ -23,29 +24,31 @@ public class CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
+    private final CompilationDtoMapper compilationDtoMapper;
 
     @Autowired
-    CompilationService(CompilationRepository compilationRepository, EventRepository eventRepository) {
+    CompilationService(CompilationRepository compilationRepository,
+                       EventRepository eventRepository,
+                       CompilationDtoMapper compilationDtoMapper) {
         this.compilationRepository = compilationRepository;
         this.eventRepository = eventRepository;
+        this.compilationDtoMapper = compilationDtoMapper;
     }
 
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         log.info("Getting compilations with pinned: {}, from: {}, size: {}", pinned, from, size);
         return compilationRepository.findAll()
                 .stream()
-                .filter(item -> {
-                    return (pinned == null) ? true : item.getPinned() == pinned;
-                })
+                .filter(item -> pinned == null || item.getPinned() == pinned)
                 .skip(from)
                 .limit(size)
-                .map((item) -> CompilationDtoMapper.toCompilationDto(item))
+                .map((item) -> compilationDtoMapper.toCompilationDto(item))
                 .collect(Collectors.toList());
     }
 
     public CompilationDto getCompilation(Long compId) {
         log.info("Getting compilation by id: {}", compId);
-        return CompilationDtoMapper.toCompilationDto(compilationRepository
+        return compilationDtoMapper.toCompilationDto(compilationRepository
                 .findById(compId).orElseThrow(() -> new EntityNotFoundException("Подборка id = " + compId + " не найдена")));
 
     }
@@ -56,12 +59,11 @@ public class CompilationService {
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             events = newCompilationDto.getEvents()
                     .stream()
-                    .map(item -> {
-                        return eventRepository.findById(item).get();
-                    })
+                    .map(item -> eventRepository.findById(item)
+                            .orElseThrow(() -> new BadRequestException("событие id = " + item + " не найдено")))
                     .collect(Collectors.toList());
         }
-        return CompilationDtoMapper.toCompilationDto(compilationRepository
+        return compilationDtoMapper.toCompilationDto(compilationRepository
                 .save(NewCompilationDtoMapper.toCompilation(newCompilationDto, events)));
     }
 
@@ -80,9 +82,8 @@ public class CompilationService {
         if (updateRequest.getEvents() != null) {
             events = updateRequest.getEvents()
                     .stream()
-                    .map(item -> {
-                        return eventRepository.findById(item).get();
-                    })
+                    .map(item -> eventRepository.findById(item)
+                            .orElseThrow(() -> new BadRequestException("событие id = " + item + " не найдено")))
                     .collect(Collectors.toList());
             oldCompilation.setEvents(events);
         }
@@ -93,6 +94,6 @@ public class CompilationService {
             oldCompilation.setTitle(updateRequest.getTitle());
         }
 
-        return CompilationDtoMapper.toCompilationDto(compilationRepository.save(oldCompilation));
+        return compilationDtoMapper.toCompilationDto(compilationRepository.save(oldCompilation));
     }
 }

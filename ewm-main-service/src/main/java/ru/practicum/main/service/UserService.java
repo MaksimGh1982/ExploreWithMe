@@ -8,7 +8,6 @@ import ru.practicum.main.dto.NewUserRequest;
 import ru.practicum.main.dto.UserDto;
 import ru.practicum.main.mapper.NewUserRequestMapper;
 import ru.practicum.main.mapper.UserDtoMapper;
-import ru.practicum.main.model.User;
 import ru.practicum.main.storage.UserRepository;
 
 import java.util.List;
@@ -29,12 +28,10 @@ public class UserService {
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         log.info("Getting users with ids: {}, from: {}, size: {}", ids, from, size);
         return userRepository.findAll().stream()
-                .filter(item -> {
-                    return ids.isEmpty() ? true : ids.contains(item.getId());
-                })
+                .filter(item -> ids.isEmpty() || ids.contains(item.getId()))
                 .skip(from)
                 .limit(size)
-                .map(item -> UserDtoMapper.userToUserDto(item))
+                .map(UserDtoMapper::userToUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -45,12 +42,15 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         log.info("Deleting user with id: {}", userId);
-        findUserById(userId);
-        userRepository.deleteById(userId);
+        if (existsUserById(userId)) {
+            userRepository.deleteById(userId);
+        } else {
+            throw new EntityNotFoundException("User with id=" + userId + " was not found");
+        }
     }
 
-    public User findUserById(Long userId) {
+    public Boolean existsUserById(Long userId) {
         log.info("Finding user by id: {}", userId);
-        return userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id=" + userId + " was not found"));
+        return userRepository.existsById(userId);
     }
 }

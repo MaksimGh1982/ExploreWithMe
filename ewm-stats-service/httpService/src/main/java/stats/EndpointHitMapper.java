@@ -11,7 +11,8 @@ public class EndpointHitMapper {
                 endpointHitDto.getApp(),
                 endpointHitDto.getUri(),
                 endpointHitDto.getIp(),
-                endpointHitDto.getTimestamp()
+                endpointHitDto.getTimestamp(),
+                endpointHitDto.getEventId()
         );
     }
 
