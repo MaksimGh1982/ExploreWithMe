@@ -1,11 +1,20 @@
 package ru.practicum.main.mapper;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.practicum.main.dto.CommentDto;
 import ru.practicum.main.model.Comment;
 
-@UtilityClass
+@Component
 public class CommentDtoMapper {
+
+    private final EventShortDtoMapper eventShortDtoMapper;
+
+    @Autowired
+    CommentDtoMapper(EventShortDtoMapper eventShortDtoMapper) {
+        this.eventShortDtoMapper = eventShortDtoMapper;
+    }
+
     public CommentDto toCommentDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
@@ -13,7 +22,7 @@ public class CommentDtoMapper {
         commentDto.setCreatedAt(comment.getCreated());
         commentDto.setStatus(comment.getStatus());
         commentDto.setUser(UserShortDtoMapper.toUserShortDto(comment.getUser()));
-        commentDto.setEvent(EventShortDtoMapper.eventShortDto(comment.getEvent()));
+        commentDto.setEvent(eventShortDtoMapper.eventShortDto(comment.getEvent()));
         return commentDto;
     }
 

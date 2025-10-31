@@ -27,14 +27,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final CommentDtoMapper commentDtoMapper;
 
     @Autowired
     public CommentService(CommentRepository commentRepository,
                           EventRepository eventRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          CommentDtoMapper commentDtoMapper) {
         this.commentRepository = commentRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.commentDtoMapper = commentDtoMapper;
     }
 
     public CommentDto addCommentToEvent(Long userId, Long eventId, NewCommentDto newCommentDto) {
@@ -49,7 +52,7 @@ public class CommentService {
             throw new ValidException("Пользователь может оставить только один комментарий к событию");
         }
 
-        return CommentDtoMapper.toCommentDto(commentRepository
+        return commentDtoMapper.toCommentDto(commentRepository
                 .save(NewCommentDtoMapper.toComment(newCommentDto.getContent(), event, user)));
     }
 
@@ -60,7 +63,7 @@ public class CommentService {
 
         comment.setContent(newCommentDto.getContent());
         comment.setStatus(CommentStatus.PENDING);
-        return CommentDtoMapper.toCommentDto(commentRepository.save(comment));
+        return commentDtoMapper.toCommentDto(commentRepository.save(comment));
     }
 
     public void deleteCommentToEvent(Long commentId) {
@@ -79,7 +82,7 @@ public class CommentService {
         log.info("getApprovedCommentsForEvent eventId: {}", eventId);
         return commentRepository.findByStatusAndEventId(CommentStatus.APPROVED, eventId)
                 .stream()
-                .map(CommentDtoMapper::toCommentDto)
+                .map(commentDtoMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
@@ -87,7 +90,7 @@ public class CommentService {
         log.info("getPendingComments");
         return commentRepository.findByStatus(CommentStatus.PENDING)
                 .stream()
-                .map(CommentDtoMapper::toCommentDto)
+                .map(commentDtoMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
@@ -96,7 +99,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BadRequestException("Комментарий id = " + commentId + " не найден"));
         comment.setStatus(status);
-        return CommentDtoMapper.toCommentDto(commentRepository.save(comment));
+        return commentDtoMapper.toCommentDto(commentRepository.save(comment));
     }
 
     public CommentDto approveComment(Long commentId) {
