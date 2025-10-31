@@ -22,24 +22,23 @@ public class Comment {
     @Column(name = "content", nullable = false, length = 1000)
     private String content;
 
-    @Column(name = "createdAt", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private CommentStatus status = CommentStatus.PENDING;
 
     @ManyToOne
-    @JoinColumn(name = "user_Id", nullable = false)
+    @JoinColumn(name = "User_Id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "event_Id", nullable = false)
+    @JoinColumn(name = "Event_Id", nullable = false)
     private Event event;
-
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        created = LocalDateTime.now();
     }
 }

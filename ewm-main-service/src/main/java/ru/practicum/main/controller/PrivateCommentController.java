@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.dto.CommentDto;
+import ru.practicum.main.dto.NewCommentDto;
 import ru.practicum.main.service.CommentService;
 
 @RestController
@@ -25,21 +26,19 @@ public class PrivateCommentController {
     public ResponseEntity<CommentDto> addComment(
             @PathVariable Long userId,
             @PathVariable Long eventId,
-            @Valid @RequestBody CommentDto request) {
+            @Valid @RequestBody NewCommentDto request) {
 
         CommentDto savedCommentDto = commentService.addCommentToEvent(userId, eventId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
     }
 
-    @PatchMapping
+    @PatchMapping("/{commentId}")
     public ResponseEntity<CommentDto> updateComment(
-            @PathVariable Long userId,
-            @PathVariable Long eventId,
-            @Valid @RequestBody CommentDto request) {
+            @PathVariable Long commentId,
+            @Valid @RequestBody NewCommentDto request) {
 
-        CommentDto savedCommentDto = commentService.updateCommentToEvent(userId,eventId, request);
+        CommentDto savedCommentDto = commentService.updateCommentToEvent(commentId, request);
         return ResponseEntity.ok(savedCommentDto);
-
     }
 
     @DeleteMapping("/{commentId}")
