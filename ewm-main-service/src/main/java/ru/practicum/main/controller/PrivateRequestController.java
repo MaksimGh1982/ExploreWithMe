@@ -1,5 +1,6 @@
 package ru.practicum.main.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,10 @@ public class PrivateRequestController {
     @PostMapping
     public ResponseEntity<ParticipationRequestDto> addParticipationRequest(
             @PathVariable Long userId,
-            @RequestParam Long eventId) {
+            @RequestParam Long eventId,
+            HttpServletRequest httpRequest) {
 
-        ParticipationRequestDto request = requestService.addParticipationRequest(userId, eventId);
+        ParticipationRequestDto request = requestService.addParticipationRequest(userId, eventId, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(request);
     }
 

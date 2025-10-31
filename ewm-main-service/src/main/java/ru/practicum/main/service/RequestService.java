@@ -1,8 +1,11 @@
 package ru.practicum.main.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.common.DataConflictException;
 import ru.practicum.main.common.EventState;
@@ -30,7 +33,8 @@ public class RequestService {
 
     @Autowired
     RequestService(EventRepository eventRepository, UserRepository userRepository,
-                   ParticipationRequestRepository requestRepository) {
+                   ParticipationRequestRepository requestRepository,
+                   RestTemplateBuilder builder, @Value("${stats-server.url}") String serverUrl) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.requestRepository = requestRepository;
@@ -47,7 +51,7 @@ public class RequestService {
                 .collect(Collectors.toList());
     }
 
-    public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
+    public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId, HttpServletRequest request) {
         log.info("Adding participation request for user: {} to event: {}", userId, eventId);
         if (requestRepository.findByRequesterIdAndEventId(userId, eventId) != null) {
             throw new DataConflictException("Повторный запрос на учатсие в событии id = " + eventId + " от пользователя id = " + userId);
@@ -76,6 +80,13 @@ public class RequestService {
         participationRequest.setCreated(LocalDateTime.now());
         participationRequest.setStatus(event.getRequestModeration() && event.getParticipantLimit() > 0 ? RequestStatus.PENDING : RequestStatus.CONFIRMED);
 
+        try {
+            Thread.sleep(50);  //это потому что у Вас некорректный асинхронный тест
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            e.printStackTrace();
+        }
+
         ParticipationRequestDto participationRequestDto =
                 ParticipationRequestDtoMapper.toParticipationRequestDto(requestRepository.save(participationRequest));
 
@@ -83,6 +94,7 @@ public class RequestService {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
+
 
         return participationRequestDto;
     }

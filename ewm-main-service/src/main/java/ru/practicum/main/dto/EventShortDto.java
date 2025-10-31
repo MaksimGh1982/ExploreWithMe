@@ -24,7 +24,7 @@ public class EventShortDto {
     @NotNull
     private CategoryDto category;
 
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
 
     @NotBlank
     @JsonFormat(pattern = GlobalConstant.DATA_PATTERN)
