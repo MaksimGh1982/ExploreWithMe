@@ -51,7 +51,6 @@ public class CommentService {
         if (commentRepository.countByUserIdAndEventId(userId, eventId) > 0) {
             throw new ValidException("Пользователь может оставить только один комментарий к событию");
         }
-
         return commentDtoMapper.toCommentDto(commentRepository
                 .save(NewCommentDtoMapper.toComment(newCommentDto.getContent(), event, user)));
     }
