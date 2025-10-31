@@ -50,7 +50,7 @@ public class Event {
     private EventState state;
 
     @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;
@@ -69,7 +69,7 @@ public class Event {
         if (participantLimit == null) participantLimit = 0;
         if (requestModeration == null) requestModeration = true;
         if (state == null) state = EventState.PENDING;
-        if (confirmedRequests == null) confirmedRequests = 0L;
+        if (confirmedRequests == null) confirmedRequests = 0;
     }
 
     @Embeddable

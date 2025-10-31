@@ -11,7 +11,7 @@ import ru.practicum.main.dto.NewCommentDto;
 import ru.practicum.main.service.CommentService;
 
 @RestController
-@RequestMapping("/user/{userId}/events/{eventId}/comments")
+@RequestMapping("/users/{userId}/events/{eventId}/comments")
 @Validated
 public class PrivateCommentController {
 
