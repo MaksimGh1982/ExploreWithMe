@@ -25,4 +25,7 @@ public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long>,
     List<StatsDto> uniqueGetStatsDto(@Param("start") LocalDateTime start,
                                      @Param("end") LocalDateTime end);
 
+    @Query("SELECT COUNT(DISTINCT u.ip) FROM EndpointHit u WHERE u.event = :eventId")
+    Integer countUniqueViewsByEventId(@Param("eventId") Long eventId);
+
 }

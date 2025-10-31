@@ -5,6 +5,7 @@ import dto.StatsDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,9 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public void save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
-        statsService.hit(endpointHitDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public EndpointHitDto save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
+        return statsService.hit(endpointHitDto);
     }
 
     @GetMapping("/stats")
@@ -34,5 +36,11 @@ public class StatsController {
                                          @RequestParam(defaultValue = "false") boolean unique) {
 
         return statsService.getStats(start, end, uris, unique);
+    }
+
+    @GetMapping("/stats/{eventId}")
+    public Integer getViews(@PathVariable Long eventId) {
+        return statsService.getViews(eventId);
+
     }
 }

@@ -45,7 +45,7 @@ services:
     image: postgres:16.1
     environment:
       - POSTGRES_DB=maindb
-      - POSTGRES_USER=mainsuser
+      - POSTGRES_USER=mainuser
       - POSTGRES_PASSWORD=mainpass
     ports:
       - "5432:5432"

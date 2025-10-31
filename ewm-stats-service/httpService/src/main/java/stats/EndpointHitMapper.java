@@ -11,7 +11,19 @@ public class EndpointHitMapper {
                 endpointHitDto.getApp(),
                 endpointHitDto.getUri(),
                 endpointHitDto.getIp(),
-                endpointHitDto.getTimestamp()
+                endpointHitDto.getTimestamp(),
+                endpointHitDto.getEventId()
         );
+    }
+
+    public EndpointHitDto endpointHitDto(EndpointHit endpointHit) {
+        EndpointHitDto endpointHitDto = new EndpointHitDto();
+        endpointHitDto.setIp(endpointHit.getIp());
+        endpointHitDto.setUri(endpointHit.getUri());
+        endpointHitDto.setId(endpointHit.getId());
+        endpointHitDto.setApp(endpointHit.getApp());
+        endpointHitDto.setTimestamp(endpointHit.getTimestamp());
+
+        return endpointHitDto;
     }
 }

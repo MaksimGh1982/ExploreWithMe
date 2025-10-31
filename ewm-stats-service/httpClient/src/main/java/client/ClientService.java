@@ -28,13 +28,14 @@ public class ClientService extends BaseClient {
         );
     }
 
-    public void hit(String app, String uri, String ip, LocalDateTime timestamp) {
+    public ResponseEntity<Object> hit(String app, String uri, String ip, LocalDateTime timestamp, Long eventId) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setIp(ip);
         endpointHitDto.setUri(uri);
         endpointHitDto.setApp(app);
         endpointHitDto.setTimestamp(timestamp);
-        post("/hit", endpointHitDto);
+        endpointHitDto.setEventId(eventId);
+        return post("/hit", endpointHitDto);
     }
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, String uris, boolean unique) {
@@ -49,5 +50,10 @@ public class ClientService extends BaseClient {
                         "uris", uris,
                         "unique", String.valueOf(unique)));
 
+    }
+
+    public ResponseEntity<Object> getViews(Long eventId) {
+        log.info("HttpClient getViews eventId=" + eventId);
+        return get("/stats/" + eventId, -1L, null);
     }
 }
